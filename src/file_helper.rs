@@ -2,6 +2,15 @@
 use std::fs::{self, File};
 use std::{io::Write, fs::OpenOptions};
 
+
+pub fn read_dir_as_vec(path:String) -> Vec<String>{
+    // Reads the file in specified folder and returns without path
+    let string_vector: Vec<String> = std::fs::read_dir(path.clone()).unwrap()
+    .map(|dir_entry| dir_entry.unwrap().path().file_name().unwrap().to_str().unwrap().to_owned())
+    .collect();
+    return string_vector;
+}
+
 pub fn write_to_file(path:String,buffer:String){
     //opens file at specified path with read-write permissions
     let mut file = OpenOptions::new()
@@ -41,21 +50,26 @@ pub fn create_directory(path:String) -> std::io::Result<()>{
     Ok(()) 
 }
 
+pub fn del_files(path:String){
+    fs::remove_file(path).expect("Error in deleting the file");
+}
+
 pub fn list_files_in_dir(path:String){
     /*
     Lists all the files in a directory. Since the steam usernames are stored as the file-names in this directory
     the user variable can be later be passed to the login function or something of that sort. Currently remains as a mean
     to list the saved users to the user.
     */
-    let files = fs::read_dir(path).unwrap();
-    for (usernumber,user) in files.enumerate(){ 
-        println!("{},{}",usernumber,user.unwrap().path().display()); // fancy shit to display user number , username
-        
+    let mut count:i32 = 0;
+    let files = read_dir_as_vec(path.clone());
+    for users in files{
+        println!("{}. {}",count+1,users);
+        count+=1;
+    } // fancy shit to display user number , username
         /* example
         0. Chal
         1. LOL 
         */
-    }
 }
 
 pub fn create_file(path:String , file_name:String){
@@ -69,3 +83,4 @@ pub fn create_file(path:String , file_name:String){
     println!("{}",file);
     File::create(file).expect("Error Creating the file!!!!");
 }
+
